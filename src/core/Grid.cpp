@@ -1,7 +1,7 @@
 /*
  * Created by SG220 on 2023/10/18.
- * Copyright (C) 2023 Senken. All rights reserved. 
- * Ownership: Senken (www.senken.com.cn)
+ * Copyright (C) 2023 Nevermoreluo. All rights reserved.
+ * Ownership: Nevermoreluo ()
  * License: All rights reserved. Unauthorized copying, modification, 
  * or distribution of this software, or any portion thereof, is strictly prohibited.
  * Description: This file contains the implementation of the pathfinding software.
@@ -13,49 +13,102 @@
 using namespace PathFinding;
 
 
-Grid::Grid(std::vector<std::vector<int>>& matrix_input, int height, std::vector<std::vector<int>> matrix){
-    height = matrix_input.size();
+Grid::Grid(const std::vector<std::vector<int>>& matrix_input){
+    this->height = matrix_input.size();
     width = matrix_input[0].size();
-    matrix = matrix_input;
-    this->nodes = buildNodes(width, height, matrix);
+    this->nodes = buildNodes(width, height, matrix_input);
 }
+
+Grid::Grid(const int** matrix)
+{
+    width = sizeof(matrix) / sizeof(matrix[0]);
+    height = sizeof(matrix[0]) / sizeof(int);
+    std::vector<std::vector<int>> matrix_vec(width, std::vector<int>(height));;
+    for (int i = 0; i < width; ++i) {
+        for (int j = 0; j < height; ++j) {
+            matrix_vec[i][j] = matrix[i][j];
+        }
+    }
+    this->nodes = buildNodes(width, height, matrix_vec);
+}
+
 
 Grid::Grid(int width, int height, std::vector<std::vector<int>> matrix) {
     this->width = width;
     this->height = height;
-
     this->nodes = buildNodes(width, height, matrix);
 }
 
-node_vector_t Grid::buildNodes(int width, int height, std::vector<std::vector<int>> matrix) {
-    node_vector_t nodes(height, std::vector<std::shared_ptr<Node>>(width));
+Grid::~Grid()
+{
+    // 释放内存
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++) {
+            delete nodes[i][j];  // 释放单个A对象的内存
+        }
+        delete[] nodes[i];  // 释放行的内存
+    }
+    delete[] nodes;  // 释放二维数组的内存
+}
 
-    for (int i = 0; i < height; ++i) {
-        for (int j = 0; j < width; ++j) {
-            nodes[i][j] = std::make_shared<Node>(j, i);
+
+Node*** Grid::buildNodes(int _width, int _height, const std::vector<std::vector<int>>& matrix)
+{
+    Node*** _nodes = new Node**[_height];
+    for (int i = 0; i < _height; i++) {
+        _nodes[i] = new Node*[_width];
+        for (int j = 0; j < _width; j++) {
+            _nodes[i][j] = new Node(j, i);  // 分配一个新的A对象
         }
     }
 
     if (matrix.empty()) {
-        return nodes;
+        return _nodes;
     }
 
-    if (matrix.size() != height || matrix[0].size() != width) {
+    if (matrix.size() != _height || matrix[0].size() != _width) {
         throw std::runtime_error("Matrix size does not fit");
     }
 
-    for (int i = 0; i < height; ++i) {
-        for (int j = 0; j < width; ++j) {
+    for (int i = 0; i < _height; ++i) {
+        for (int j = 0; j < _width; ++j) {
             if (matrix[i][j]) {
-                nodes[i][j]->walkable = false;
+                _nodes[i][j]->walkable = false;
             }
         }
     }
-
-    return nodes;
+    return _nodes;
 }
 
-std::shared_ptr<Node> Grid::getNodeAt(int x, int y) {
+//node_vector_t Grid::buildNodes(int _width, int _height, const std::vector<std::vector<int>>& matrix) {
+//    node_vector_t _nodes(_height, std::vector<NodePtr>(_width));
+//
+//    for (int i = 0; i < _height; ++i) {
+//        for (int j = 0; j < _width; ++j) {
+//            _nodes[i][j] = new Node(j, i);
+//        }
+//    }
+//
+//    if (matrix.empty()) {
+//        return _nodes;
+//    }
+//
+//    if (matrix.size() != _height || matrix[0].size() != _width) {
+//        throw std::runtime_error("Matrix size does not fit");
+//    }
+//
+//    for (int i = 0; i < _height; ++i) {
+//        for (int j = 0; j < _width; ++j) {
+//            if (matrix[i][j]) {
+//                _nodes[i][j]->walkable = false;
+//            }
+//        }
+//    }
+//
+//    return _nodes;
+//}
+
+NodePtr Grid::getNodeAt(int x, int y) {
     return nodes[y][x];
 }
 
@@ -71,10 +124,10 @@ void Grid::setWalkableAt(int x, int y, bool walkable) {
     nodes[y][x]->walkable = walkable;
 }
 
-std::vector<std::shared_ptr<Node>> Grid::getNeighbors(std::shared_ptr<Node> node, DiagonalMovement diagonalMovement) {
+std::vector<NodePtr> Grid::getNeighbors(NodePtr node, DiagonalMovement diagonalMovement) {
     int x = node->x;
     int y = node->y;
-    std::vector<std::shared_ptr<Node>> neighbors;
+    std::vector<NodePtr> neighbors;
     bool s0 = false, d0 = false;
     bool s1 = false, d1 = false;
     bool s2 = false, d2 = false;
@@ -144,15 +197,12 @@ std::vector<std::shared_ptr<Node>> Grid::getNeighbors(std::shared_ptr<Node> node
 
 Grid Grid::clone() {
     Grid newGrid(width, height);
-    node_vector_t newNodes(height, std::vector<std::shared_ptr<Node>>(width));
 
     for (int i = 0; i < height; ++i) {
         for (int j = 0; j < width; ++j) {
-            newNodes[i][j] = std::make_shared<Node>(j, i, nodes[i][j]->walkable);
+            newGrid.nodes[i][j]->walkable = nodes[i][j]->walkable;
         }
     }
-
-    newGrid.nodes = newNodes;
 
     return newGrid;
 }

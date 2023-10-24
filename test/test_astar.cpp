@@ -1,7 +1,7 @@
 /*
  * Created by SG220 on 2023/10/19.
- * Copyright (C) 2023 Senken. All rights reserved. 
- * Ownership: Senken (www.senken.com.cn)
+ * Copyright (C) 2023 Nevermoreluo. All rights reserved.
+ * Ownership: Nevermoreluo ()
  * License: All rights reserved. Unauthorized copying, modification, 
  * or distribution of this software, or any portion thereof, is strictly prohibited.
  * Description: This file contains the implementation of the pathfinding software.
@@ -14,18 +14,11 @@
 //std::shared_ptr<Grid> grid = std::make_shared<Grid>(matrix, 3);
 TEST(FaceCheck, BasicAssertions) {
     // base check
-    EXPECT_STREQ("hello", "hello");
-
     using namespace PathFinding;
-    std::vector<std::vector<int>> matrix{{0, 0, 0},{0,1,0}, {0,0,0}};
-    PathFinding::Grid g(3, 3);
+    std::vector<std::vector<int>> matrix{{0,0,0,0,0}};
 
-//    AStarFinder aStarFinder;
-//    auto path = aStarFinder.findPath(0, 0, 2, 2, grid);
-//    for (auto p : path){
-//        for (auto i: p){
-//            printf("%d", i);
-//        }
-//        printf("\n");
-//    }
+    AStarFinder aStarFinder;
+    auto path = aStarFinder.findPath(0, 0, matrix[0].size()-1, matrix.size()-1, matrix);
+    EXPECT_EQ(path, std::vector<std::vector<int>>({{0,0},{1,0}, {2,0}, {3,0}, {4,0}}));
+
 }

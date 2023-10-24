@@ -1,13 +1,15 @@
 /*
  * Created by SG220 on 2023/10/18.
- * Copyright (C) 2023 Senken. All rights reserved. 
- * Ownership: Senken (www.senken.com.cn)
+ * Copyright (C) 2023 Nevermoreluo. All rights reserved.
+ * Ownership: Nevermoreluo ()
  * License: All rights reserved. Unauthorized copying, modification, 
  * or distribution of this software, or any portion thereof, is strictly prohibited.
  * Description: This file contains the implementation of the pathfinding software.
  */
 
 #include "AStarFinder.h"
+
+#include <utility>
 
 using namespace PathFinding;
 using namespace PathFinding::Utils;
@@ -38,30 +40,54 @@ AStarFinder::AStarFinder(bool allowDiagonal, bool dontCrossCorners , DiagonalMov
     }
 }
 
-Path AStarFinder::findPath(int startX, int startY, int endX, int endY, std::shared_ptr<Grid> grid) {
-    auto cmp = [](const std::shared_ptr<Node>& left, const std::shared_ptr<Node>& right) {
+std::vector<std::vector<int>> AStarFinder::findPath(int startX, int startY, int endX, int endY, const std::vector<std::vector<int>>& matrix)
+{
+    auto grid = std::make_shared<Grid>(matrix);
+    return findPath(startX, startY, endX, endY, grid);
+}
+
+std::vector<std::vector<int>> AStarFinder::findPath(int startX, int startY, int endX, int endY, const int** matrix)
+{
+    auto grid = std::make_shared<Grid>(matrix);
+    return findPath(startX, startY, endX, endY, grid);
+
+}
+
+std::vector<std::vector<int>> AStarFinder::findPath(const std::vector<std::vector<int>>& startPoints, int endX, int endY, const std::vector<std::vector<int>>& matrix)
+{
+    auto grid = std::make_shared<Grid>(matrix);
+    return findPath(startPoints, endX, endY, grid);
+}
+
+
+Path AStarFinder::findPath(const std::vector<std::vector<int>>& startPoints, int endX, int endY, std::shared_ptr<Grid> grid) {
+    auto cmp = [](const NodePtr& left, const NodePtr& right) {
         return left->f  > right->f;
     };
+    std::priority_queue<NodePtr, std::vector<NodePtr>, decltype(cmp)> openList(cmp);
+    std::vector<NodePtr> closedList;
 
-    std::priority_queue<std::shared_ptr<Node>, std::vector<std::shared_ptr<Node>>, decltype(cmp)> openList(cmp);
-    std::vector<std::shared_ptr<Node>> closedList;
-    std::shared_ptr<Node> startNode = grid->getNodeAt(startX, startY);
-    std::shared_ptr<Node> endNode = grid->getNodeAt(endX, endY);
+    for (auto& pos: startPoints) {
+        if (pos.size() != 2){
+            throw std::runtime_error("startPoints need at least two point");
+        }
+        NodePtr startNode = grid->getNodeAt(pos[0], pos[1]);
+        startNode->g = 0;
+        startNode->f = 0;
+
+        openList.push(startNode);
+        startNode->opened = 1;
+    }
+
+    NodePtr endNode = grid->getNodeAt(endX, endY);
     distance_t SQRT2 = std::sqrt(2);
-    std::shared_ptr<Node> node;
-    std::vector<std::shared_ptr<Node>> neighbors;
-    std::shared_ptr<Node> neighbor;
+    NodePtr node;
+    std::vector<NodePtr> neighbors;
+    NodePtr neighbor;
     int x, y;
     distance_t ng;
 
-    startNode->g = 0;
-    startNode->f = 0;
-
-    openList.push(startNode);
-    startNode->opened = true;
-
     while (!openList.empty()) {
-//            std::sort(openList.begin(), openList.end(), [](std::shared_ptr<Node> a, std::shared_ptr<Node> b) { return a->f < b->f; });
         node = openList.top();
         openList.pop();
         node->closed = true;
@@ -92,15 +118,18 @@ Path AStarFinder::findPath(int startX, int startY, int endX, int endY, std::shar
 
                 if (!neighbor->opened) {
                     openList.push(neighbor);
-                    neighbor->opened = true;
-                } else {
-//                        updateItem(neighbor, openList);
+                    neighbor->opened = 1;
                 }
             }
         }
     }
 
     return {};
+}
+
+Path AStarFinder::findPath(int startX, int startY, int endX, int endY, std::shared_ptr<Grid> grid) {
+    std::vector<std::vector<int>> startPoints = {{startX, startY}};
+    return findPath(startPoints, endX, endY, std::move(grid));
 }
 
 

@@ -1,7 +1,7 @@
 /*
  * Created by SG220 on 2023/10/18.
- * Copyright (C) 2023 Senken. All rights reserved. 
- * Ownership: Senken (www.senken.com.cn)
+ * Copyright (C) 2023 Nevermoreluo. All rights reserved.
+ * Ownership: Nevermoreluo ()
  * License: All rights reserved. Unauthorized copying, modification, 
  * or distribution of this software, or any portion thereof, is strictly prohibited.
  * Description: This file contains the implementation of the pathfinding software.
@@ -16,22 +16,21 @@
 #include "core/Node.h"
 
 namespace PathFinding {
-using node_vector_t = std::vector<std::vector<std::shared_ptr<Node>>>;
+using node_vector_t = Node***;
 
 
 class Grid {
 public:
-    int width;
-    int height;
-    node_vector_t nodes;
-
-    Grid(std::vector<std::vector<int>>& matrix_input, int height, std::vector<std::vector<int>> matrix = {});
+    Grid(const std::vector<std::vector<int>>& matrix_input);
+    Grid(const int** matrix);
 
     Grid(int width, int height, std::vector<std::vector<int>> matrix = {});
 
-    node_vector_t buildNodes(int width, int height, std::vector<std::vector<int>> matrix);
+    ~Grid();
 
-    std::shared_ptr<Node> getNodeAt(int x, int y);
+    node_vector_t buildNodes(int width, int height, const std::vector<std::vector<int>>& matrix);
+
+    NodePtr getNodeAt(int x, int y);
 
     bool isWalkableAt(int x, int y);
 
@@ -39,9 +38,17 @@ public:
 
     void setWalkableAt(int x, int y, bool walkable);
 
-    std::vector<std::shared_ptr<Node>> getNeighbors(std::shared_ptr<Node> node, DiagonalMovement diagonalMovement);
+    std::vector<NodePtr> getNeighbors(NodePtr node, DiagonalMovement diagonalMovement);
 
     Grid clone();
+
+private:
+    //Node*** buildRowNodes(int width, int height, const std::vector<std::vector<int>>& matrix);
+
+private:
+    int width;
+    int height;
+    node_vector_t nodes;
 };
 
 }

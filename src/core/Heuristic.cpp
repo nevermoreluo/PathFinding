@@ -1,7 +1,7 @@
 /*
  * Created by SG220 on 2023/10/18.
- * Copyright (C) 2023 Senken. All rights reserved. 
- * Ownership: Senken (www.senken.com.cn)
+ * Copyright (C) 2023 Nevermoreluo. All rights reserved.
+ * Ownership: Nevermoreluo ()
  * License: All rights reserved. Unauthorized copying, modification, 
  * or distribution of this software, or any portion thereof, is strictly prohibited.
  * Description: This file contains the implementation of the pathfinding software.

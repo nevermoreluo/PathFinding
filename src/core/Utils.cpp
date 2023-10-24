@@ -1,7 +1,7 @@
 /*
  * Created by SG220 on 2023/10/18.
- * Copyright (C) 2023 Senken. All rights reserved. 
- * Ownership: Senken (www.senken.com.cn)
+ * Copyright (C) 2023 Nevermoreluo. All rights reserved.
+ * Ownership: Nevermoreluo ()
  * License: All rights reserved. Unauthorized copying, modification, 
  * or distribution of this software, or any portion thereof, is strictly prohibited.
  * Description: This file contains the implementation of the pathfinding software.
@@ -13,8 +13,8 @@
 namespace PathFinding{
 namespace Utils{
 
-Path backtrace(std::shared_ptr<Node> node) {
-    std::shared_ptr<Node> tmp_node = node;
+Path backtrace(NodePtr node) {
+    NodePtr tmp_node = node;
     Path path;
     path.push_back({tmp_node->x, tmp_node->y});
     while (tmp_node->parent) {
@@ -25,7 +25,7 @@ Path backtrace(std::shared_ptr<Node> node) {
     return path;
 }
 
-Path biBacktrace(std::shared_ptr<Node> nodeA, std::shared_ptr<Node> nodeB) {
+Path biBacktrace(NodePtr nodeA, NodePtr nodeB) {
     Path pathA = PathFinding::Utils::backtrace(nodeA);
     Path pathB = PathFinding::Utils::backtrace(nodeB);
     std::reverse(pathB.begin(), pathB.end());

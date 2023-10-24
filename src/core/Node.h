@@ -1,7 +1,7 @@
 /*
  * Created by SG220 on 2023/10/18.
- * Copyright (C) 2023 Senken. All rights reserved. 
- * Ownership: Senken (www.senken.com.cn)
+ * Copyright (C) 2023 Nevermoreluo. All rights reserved.
+ * Ownership: Nevermoreluo ()
  * License: All rights reserved. Unauthorized copying, modification, 
  * or distribution of this software, or any portion thereof, is strictly prohibited.
  * Description: This file contains the implementation of the pathfinding software.
@@ -27,12 +27,17 @@ struct Node {
     distance_t h = 0;
     distance_t f = 0;
 
-    bool opened = false;
+    int opened = 0;
     bool closed = false;
     bool walkable = false;
-    std::shared_ptr<Node> parent = nullptr;
+    Node* parent = nullptr;
 
 };
+
+using NodePtr = Node*;
+
 }
+
+
 
 #endif //PATHFINDING_NODE_H
