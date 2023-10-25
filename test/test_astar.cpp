@@ -8,6 +8,7 @@
  */
 
 #include "src/finders/AStarFinder.h"
+#include "src/finders/BiBestFirstFinder.h"
 
 #include <gtest/gtest.h>
 

@@ -22,7 +22,7 @@ namespace PathFinding {
 
 class AStarFinder {
 public:
-    AStarFinder(bool allowDiagonal = true, bool dontCrossCorners = false,
+    explicit AStarFinder(bool allowDiagonal = true, bool dontCrossCorners = false,
                 DiagonalMovement diagonalMovement = Never, distance_t weight = 1.0);
 
     std::vector<std::vector<int>> findPath(int startX, int startY, int endX, int endY, const std::vector<std::vector<int>>& matrix);

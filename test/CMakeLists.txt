@@ -35,7 +35,7 @@ endif()
 
 
 #add_executable(test main.cpp )
-target_link_libraries(test pathfinding)
+#target_link_libraries(test pathfinding)
 
 # 'Google_Tests_run' is the target name
 # 'test1.cpp tests2.cpp' are source files with tests
